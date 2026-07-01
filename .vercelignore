@@ -1,0 +1,4 @@
+app.py
+server-*.log
+__pycache__/
+*.pyc
