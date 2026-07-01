@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/dashboard", "dest": "/api/dashboard.py" },
+    { "src": "/api/template", "dest": "/api/template.py" },
+    { "src": "/styles.css", "dest": "/static/styles.css" },
+    { "src": "/app.js", "dest": "/static/app.js" },
+    { "src": "/", "dest": "/static/index.html" }
+  ]
+}

@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tableau de bord PMO</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="appTopbar">
+      <div class="tenantBlock">
+        <span class="tenantLogo">PMO</span>
+        <div>
+          <strong>TABLEAU PMO</strong>
+          <small>Portefeuille projets - Standard</small>
+        </div>
+      </div>
+      <nav class="mainNav" aria-label="Navigation principale">
+        <a class="active" href="#vue-globale">Cockpit</a>
+        <a href="#hierarchie">Modules</a>
+        <a href="#portefeuille">Vues</a>
+        <a href="#risques">Rapports</a>
+        <a href="#configuration">Configuration</a>
+      </nav>
+      <div class="topActions">
+        <div class="searchBox">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Rechercher..." />
+          <kbd>Ctrl K</kbd>
+        </div>
+        <button id="refreshBtn" class="topIcon" title="Actualiser les donnees" type="button">⟳</button>
+        <div class="userBadge">
+          <span>SA</span>
+          <div>
+            <strong>Super Admin</strong>
+            <small>SUPER ADMIN</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="moduleHero">
+        <div class="moduleTitle">
+          <span class="moduleIcon">△</span>
+          <div>
+            <h1>Tableau de bord PMO</h1>
+            <p>Suivi multi-niveaux des pôles, filiales, secteurs et projets</p>
+          </div>
+        </div>
+        <div class="heroControls">
+          <select id="poleFilter" aria-label="Filtrer par pôle"></select>
+          <select id="entityFilter" aria-label="Filtrer par filiale"></select>
+          <select id="countryFilter" aria-label="Filtrer par pays"></select>
+          <select id="projectFilter" aria-label="Filtrer par projet"></select>
+          <select id="periodFilter" aria-label="Filtrer par période"></select>
+          <a class="primaryAction" href="/api/template">Import Excel</a>
+          <select id="statusFilter" aria-label="Filtrer par statut"></select>
+        </div>
+      </section>
+
+      <section class="decisionStrip">
+        <strong>Décision de pilotage</strong>
+        <span id="decisionSummary">Chargement des arbitrages PMO...</span>
+      </section>
+
+      <section id="vue-globale" class="kpiGrid" aria-label="Indicateurs cles">
+        <article class="kpi kpiPrimary">
+          <span>Projets déclarés</span>
+          <strong id="kpiProjects">0</strong>
+          <small>Périmètre portefeuille actif</small>
+        </article>
+        <article class="kpi kpiDanger">
+          <span>Projets critiques</span>
+          <strong id="kpiCritical">0</strong>
+          <small>SPI ou CPI sous seuil</small>
+        </article>
+        <article class="kpi kpiWarning">
+          <span>Projets en retard</span>
+          <strong id="kpiDelayed">0</strong>
+          <small>Arbitrage et suivi prioritaire</small>
+        </article>
+        <article class="kpi kpiSuccess">
+          <span>CPI portefeuille</span>
+          <strong id="kpiCpi">0</strong>
+          <small>Valeur acquise / dépenses</small>
+        </article>
+        <article class="kpi kpiWarning">
+          <span>Impayés</span>
+          <strong id="kpiUnpaid">0</strong>
+          <small>Montant facturé - montant encaissé</small>
+        </article>
+        <article class="kpi kpiInfo">
+          <span>Taux facturation</span>
+          <strong id="kpiBillingRate">0%</strong>
+          <small>Montant facturé / marché TTC</small>
+        </article>
+        <article class="kpi kpiInfo">
+          <span>Taux encaissement</span>
+          <strong id="kpiCollectionRate">0%</strong>
+          <small>Montant encaissé / montant facturé</small>
+        </article>
+        <article class="kpi kpiSuccess">
+          <span>Valeur acquise</span>
+          <strong id="kpiEarned">0</strong>
+          <small>Budget x avancement physique</small>
+        </article>
+      </section>
+
+      <section class="dashboardGrid">
+        <article class="panel trendPanel">
+          <div class="panelHeader">
+            <div>
+              <h2>Tendance mensuelle</h2>
+              <p>Valeur acquise et avancement par période</p>
+            </div>
+          </div>
+          <div id="monthlyChart" class="trendChart"></div>
+        </article>
+        <article class="panel distributionPanel">
+          <div class="panelHeader">
+            <div>
+              <h2>Répartition</h2>
+              <p>Structure des données du portefeuille</p>
+            </div>
+          </div>
+          <div id="statusChart" class="distributionChart"></div>
+        </article>
+      </section>
+
+      <section id="comparaisons" class="panel comparisonPanel">
+        <div class="panelHeader">
+          <div>
+            <h2>Comparaisons PMO</h2>
+            <p>Lecture comparative par pôle, filiale et projet</p>
+          </div>
+        </div>
+        <div class="comparisonGrid">
+          <article class="comparisonCard">
+            <div class="comparisonTitle">
+              <strong>Par pôle</strong>
+              <span>CPI</span>
+            </div>
+            <div id="poleComparisonChart" class="comparisonChart"></div>
+          </article>
+          <article class="comparisonCard">
+            <div class="comparisonTitle">
+              <strong>Par filiale</strong>
+              <span>CPI</span>
+            </div>
+            <div id="entityComparisonChart" class="comparisonChart"></div>
+          </article>
+          <article class="comparisonCard">
+            <div class="comparisonTitle">
+              <strong>Par projet</strong>
+              <span>Top CPI</span>
+            </div>
+            <div id="projectComparisonChart" class="comparisonChart"></div>
+          </article>
+        </div>
+        <div class="tableWrap comparisonTableWrap">
+          <table class="comparisonTable">
+            <thead>
+              <tr>
+                <th>Niveau</th>
+                <th>Nom</th>
+                <th>Projets</th>
+                <th>Marché TTC</th>
+                <th>Budget</th>
+                <th>Valeur acquise</th>
+                <th>Dépenses</th>
+                <th>CPI</th>
+                <th>Avancement</th>
+                <th>Retards</th>
+                <th>Rouge</th>
+                <th>Orange</th>
+                <th>Vert</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="analyse-annuelle" class="panel annualPanel">
+        <div class="panelHeader">
+          <div>
+            <h2>Analyse annuelle VA / Dépenses</h2>
+            <p id="annualAnalysisLabel">Comparaison par pôle, filiale et pays</p>
+          </div>
+          <div class="annualFilters" aria-label="Filtres obligatoires analyse annuelle">
+            <label>
+              <span>Pôles *</span>
+              <select id="annualPoleFilter" multiple aria-label="Sélectionner un ou plusieurs pôles obligatoires"></select>
+            </label>
+            <label>
+              <span>Filiales *</span>
+              <select id="annualEntityFilter" multiple aria-label="Sélectionner une ou plusieurs filiales obligatoires"></select>
+            </label>
+          </div>
+        </div>
+        <div class="annualGrid">
+          <article class="annualCard">
+            <div class="comparisonTitle">
+              <strong>Par pôle</strong>
+              <span>Courbes mensuelles</span>
+            </div>
+            <div id="annualPoleChart" class="annualChart"></div>
+          </article>
+          <article class="annualCard">
+            <div class="comparisonTitle">
+              <strong>Par filiale et pays</strong>
+              <span>Courbes mensuelles</span>
+            </div>
+            <div id="annualEntityCountryChart" class="annualChart"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="hierarchie" class="panel">
+        <div class="panelHeader filtersHeader">
+          <div>
+            <h2>Analyse par niveau</h2>
+            <p>Pôles, filiales, secteurs et localisations</p>
+          </div>
+          <div class="segmented" role="tablist" aria-label="Dimension d'analyse">
+            <button class="active" data-dimension="byPole" type="button">Pôles</button>
+            <button data-dimension="byEntity" type="button">Filiales</button>
+            <button data-dimension="bySector" type="button">Secteurs</button>
+            <button data-dimension="byLocation" type="button">Sites</button>
+          </div>
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Projets</th>
+                <th>Marché TTC</th>
+                <th>Budget</th>
+                <th>Valeur acquise</th>
+                <th>Avancement</th>
+                <th>CPI</th>
+                <th>Retards</th>
+                <th>Critiques</th>
+              </tr>
+            </thead>
+            <tbody id="analysisRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="portefeuille" class="panel">
+        <div class="panelHeader">
+          <div>
+            <h2>Portefeuille projets</h2>
+            <p id="sourceInfo">Source Excel en attente</p>
+          </div>
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Projet</th>
+                <th>Pays</th>
+                <th>Pôle</th>
+                <th>Filiale</th>
+                <th>Secteur</th>
+                <th>Responsable</th>
+                <th>Délais</th>
+                <th>Marché TTC</th>
+                <th>Budget</th>
+                <th>SPI</th>
+                <th>CPI</th>
+                <th>Impayés</th>
+                <th>Facturation</th>
+                <th>Encaissement</th>
+                <th>% physique</th>
+                <th>Statut</th>
+                <th>PMO</th>
+              </tr>
+            </thead>
+            <tbody id="projectRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="risques" class="panel">
+        <div class="panelHeader">
+          <div>
+            <h2>Risques et décisions</h2>
+            <p>Points de blocage et arbitrages attendus</p>
+          </div>
+        </div>
+        <div id="riskList" class="riskList"></div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
