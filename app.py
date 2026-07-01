@@ -650,6 +650,9 @@ class PMOHandler(BaseHTTPRequestHandler):
         print(f"{self.address_string()} - {format % args}")
 
 
+handler = PMOHandler
+
+
 def main() -> None:
     host = os.environ.get("PMO_HOST", "127.0.0.1")
     port = int(os.environ.get("PMO_PORT", "8000"))
